@@ -53,7 +53,7 @@ public class UMHandler {
 		return userService.deleteUser(bean);
 	}
 //  查询某个用户
-	@RequestMapping(value="/login",method=RequestMethod.POST)
+	@RequestMapping(value="/search",method=RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> search(UserBean bean,@Validated PageUtil inUtil,BindingResult result){
 		if(result.hasErrors()){

@@ -1,7 +1,10 @@
 package com.molly.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.molly.bean.ClaBean;
 import com.molly.bean.RoomBean;
@@ -33,12 +37,44 @@ public class StuHandler {
 //	插入新的学生信息
 	@RequestMapping(value="/insert",method=RequestMethod.POST)
 	@ResponseBody
-	public String insertStu(@Validated StuBean stuBean,BindingResult result){
+	public String insertStu(@Validated StuBean stuBean,BindingResult result,MultipartFile imgName){
 		if(result.hasErrors()){
 			List<FieldError> list = result.getFieldErrors();
 			return list.toString();
 		}
+		if (imgName == null) {
+			return "请上传头像";
+		}
+		String path = "/D:/imgs";
+		//判断当前服务器是否有upload文件夹
+		File file = new File(path);
+		if(!file.exists()) file.mkdirs();
+		//在file文件夹里面创建一个文件对象
+		File file2 = new File(path,changeName(imgName.getOriginalFilename()));
+		System.out.println(file2.getAbsolutePath());
+		try {
+			System.out.println(file2.getCanonicalPath());
+			} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			imgName.transferTo(file2);
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String fileName = "/D:/imgs/" + file2.getName();
+		stuBean.setImgs(fileName);
 		return stuService.insertStu(stuBean);
+	}
+	
+	private String changeName(String oldName){
+		
+		return UUID.randomUUID()+"_"+oldName;
 	}
 //	展示某一页的学生信息
 	@RequestMapping("/showThis")
@@ -53,12 +89,8 @@ public class StuHandler {
 //	删除某一个学生，办理学生退房手续
 	@RequestMapping(value="/delete",method=RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> deleteStu(@Validated PageUtil inUtil,BindingResult result){
-		if(result.hasErrors()){
-			List<FieldError> list = result.getFieldErrors();
-			return null;
-		}
-		return stuService.showStu(inUtil);
+	public String deleteStu(StuBean stuBean){
+		return stuService.deleteStu(stuBean);
 	}
 //	预改变房间
 	@RequestMapping("/rechange")

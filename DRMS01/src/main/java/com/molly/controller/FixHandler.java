@@ -24,6 +24,9 @@ public class FixHandler {
 	private IFixService fixService;
 	
 	
+	
+	
+	
 //	插入某条信息
 	@RequestMapping(value="/insert",method=RequestMethod.POST)
 	@ResponseBody
