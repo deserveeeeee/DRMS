@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!-- 配置标签，mybatis配置文件的根标签 -->
+<configuration>
+	<!-- 环境标签：很多开发时候，允许环境不同，所以需要配置多个环境
+	数据库的类型
+	测试环境、开发环境、运行等待
+	格局不同的环境进行不同配置 -->
+	<typeAliases>
+		<package name="com.molly.bean.StudentBean"/>
+	</typeAliases>
+</configuration>

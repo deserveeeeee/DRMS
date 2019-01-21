@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+ 	<!-- 注解驱动 -->
+    <mvc:annotation-driven validator="validator"/>
+    
+    <!-- 视图解析器 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"></bean>
+    
+	<!-- 组件扫描器：注册handler -->
+	<context:component-scan base-package="com.molly.controller"/>
+	
+	<!-- 设置一个默认的servlet来处理静态资源 -->
+  	<mvc:default-servlet-handler/>
+  	
+  	 <!-- 文件上传解析器 -->
+  <!--  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<property name="maxUploadSize">
+    		<value>40958020</value>
+    	</property>
+    </bean>	  -->
+  		
+  	<!-- 创建一个jackson解析器：原本需要在adaper里面注册。因为改为了注解驱动所以系统自动注册了-->
+  	<bean name="jackson" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+  		<property name="supportedMediaTypes">
+  			<list>
+  				<value>application/json;charset=utf-8</value>
+  				<value>text/html;charset=utf-8</value>
+  				<value>text/json;charset=utf-8</value>
+  			</list>
+  		</property>
+  	</bean>
+  	
+  	<!-- 注册一个hibernate-validate校验器。并且记得把它注册到上面注解驱动里面 -->
+  	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+  		<!-- 在springmvc框架中引入hibernate validator校验器 -->
+  		<property name="providerClass" value="org.hibernate.validator.HibernateValidator"></property>
+  		<!-- 引入外部的错误文件 -->
+  		<property name="validationMessageSource" ref="messageSource"></property>
+  	</bean>
+  	
+  	
+  	<!-- 错误信息文件配置对象 -->
+  	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+  		<!-- 配置资源文件的路径 -->
+  		<property name="basenames">
+  			<list>
+  				<value>classpath:config/validate.properties</value>
+  			</list>
+  		</property>
+  		<!-- 错误信息文件的编码集 -->
+  		<property name="fileEncodings" value="utf-8"></property>
+  		<!-- 错误信息在内存缓存的时间 -->
+  		<property name="cacheSeconds" value="120"></property>
+  	</bean>	
+  	
+  		<!-- 异常处理解析器 -->
+ <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+<!--		设置系统默认处理的页面 -->
+		<property name="defaultErrorView" value="/html/404.jsp"></property>
+<!--		定义异常处理界面，获取错误信息的变量  exception -->
+		<property name="exceptionAttribute" value="ex"></property>
+
+	</bean> 
+  	
+	<!-- 如果需要shiro注解的方式，本来还需要在这里设置shiro。但是我不使用这个技术。所以这里不需要设置 -->	
+</beans>
